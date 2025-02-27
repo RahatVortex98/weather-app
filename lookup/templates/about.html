@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather and Air Quality App</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .description {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group input {
+            padding: 10px;
+            width: 80%;
+            font-size: 1em;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .result {
+            margin-top: 30px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-size: 1.2em;
+        }
+
+        .good { background-color: #00FF00; }
+        .moderate { background-color: #FFFF00; }
+        .usg { background-color: #FF9900; }
+        .unhealthy { background-color: #FFA500; }
+        .very-unhealthy { background-color: #FF0000; }
+        .hazardous { background-color: #800000; }
+
+        footer {
+            background-color: #f4f4f4;
+            color: #555;
+            text-align: center;
+            padding: 10px;
+            margin-top: 40px;
+        }
+
+        .markdown-description {
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Weather and Air Quality App</h1>
+        <p>Get the latest air quality index and weather information based on your zip code.</p>
+    </header>
+
+    <div class="container">
+        <!-- Markdown-like description (README.md format) -->
+        <div class="markdown-description">
+            ## Project Overview
+
+            This application provides **up-to-date air quality information** for a given location. 
+            Users simply enter a **zip code**, and the app will fetch the current **air quality index (AQI)** for that area.
+            
+            ### Key Features:
+            - **Zip Code Input**: Users can input a zip code to retrieve data for their location.
+            - **Air Quality Information**: Displays the air quality category, description, and AQI.
+            - **Color-Coded Categories**: Different color coding for different AQI levels:
+                - Green: Good (0-50)
+                - Yellow: Moderate (51-100)
+                - Orange: Unhealthy for Sensitive Groups (101-150)
+                - Red: Unhealthy (151-200)
+                - Purple: Very Unhealthy (201-300)
+                - Maroon: Hazardous (301-500)
+            
+            ### Example:
+            - Zip Code: **89129**
+            - AQI: **34**
+            - Air Quality: **Good** (0-50) - Satisfactory
+        </div>
+
+        <form method="POST" action="{% url 'home' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="zipcode">Enter your Zip Code:</label>
+                <input type="text" id="zipcode" name="zipcode" placeholder="enter ZIP code" required>
+            </div>
+            <button type="submit">Get Air Quality</button>
+        </form>
+
+        <div class="result">
+            {% if api %}
+                <h2>Air Quality Information for {{ zipcode }}:</h2>
+                <div class="alert {{ category_color }}">
+                    <h3>{{ api.0.Category.Name }}</h3>
+                    <p>{{ category_description }}</p>
+                    <p>Air Quality Index (AQI): {{ api.0.AQI }}</p>
+                    <p>Observed on: {{ api.0.DateObserved }}</p>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    No data received from the API. Please try again later.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
+
+{% endblock %}

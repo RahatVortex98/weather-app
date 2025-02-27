@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+ 
+{% if zipcode %}
+
+{{ zipcode }}
+
+{% endif%}
+
+
+
+{% if api %}
+    {% if api == "Error..." %}
+
+      <div class="alert alert-danger" role="alert">
+        An error occurred. Please try again later.
+      </div>
+
+    {% else %}
+
+      {% if api|length > 0 %}
+
+        <div class="jumbotron {{ category_color}}">
+          <h1 class="display-4">{{ api.0.Category.Name }}</h1>
+          <p class="lead">
+            {{ api.0.ReportingArea }}, Air Quality: {{ api.0.AQI }}
+          </p>
+
+
+        <p>{{category_description}}</p>
+
+          
+
+           
+          {% comment %} <hr class="my-4" />
+          <p>Observed on: {{ api.0.DateObserved }}</p>
+          <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+        </div> {% endcomment %}
+
+      {% else %}
+
+        <div class="alert alert-info" role="alert">
+          No air quality data available at the moment.
+        </div>
+
+      {% endif %}
+    {% endif %}
+  {% else %}
+
+    <div class="alert alert-warning" role="alert">
+      No data received from the API.
+    </div>
+
+  {% endif %}
+
+{% endblock %}
